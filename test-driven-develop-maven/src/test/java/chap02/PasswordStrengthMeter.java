@@ -5,17 +5,15 @@ public class PasswordStrengthMeter {
         if (s == null || s.isEmpty()) {
             return PasswordStrength.INVALID;
         }
-        boolean lengthEnough = s.length() >= 8;
-        boolean containsUpp = meetsContainingUppercaseCriteria(s);
-        boolean containsNum = meetsContainingNumberCriteria(s);
-        if((lengthEnough && !containsUpp && !containsNum)
-            || (!lengthEnough && !containsUpp && containsNum)
-            || (!lengthEnough && containsUpp && !containsNum)){
-            return PasswordStrength.WEAK;
-        }
-        if (!containsNum || !containsUpp || !lengthEnough) {
-            return PasswordStrength.NORMAL;
-        }
+
+        int metCounts = 0;
+
+        if (s.length() >= 8) { metCounts++; }
+        if (meetsContainingUppercaseCriteria(s)) { metCounts++; }
+        if (meetsContainingNumberCriteria(s)) { metCounts++; }
+
+        if (metCounts == 1) { return PasswordStrength.WEAK; }
+        if (metCounts == 2) { return PasswordStrength.NORMAL; }
 
         return PasswordStrength.STRONG;
     }
