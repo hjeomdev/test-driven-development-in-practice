@@ -8,16 +8,34 @@ public class ExpiryDateCalculator {
         int addedMonths = payData.getPayAmount() / 10000;
 
         if(payData.getFirstBillingDate() != null) {
-            LocalDate candidateExp = payData.getBillingDate().plusMonths(addedMonths); // 윤달인 경우, 28일이 더해짐.
-
-            if (payData.getFirstBillingDate().getDayOfMonth() != candidateExp.getDayOfMonth()) {
-                if (YearMonth.from(candidateExp).lengthOfMonth() < payData.getFirstBillingDate().getDayOfMonth()) {
-                    return candidateExp.withDayOfMonth(YearMonth.from(candidateExp).lengthOfMonth());
-                }
-                return candidateExp.withDayOfMonth(payData.getFirstBillingDate().getDayOfMonth());
-            }
+            return expiryDateUsingFirstBillingDate(payData, addedMonths);
+        } else {
+            return payData.getBillingDate().plusMonths(addedMonths);
         }
+    }
 
-        return payData.getBillingDate().plusMonths(addedMonths);
+    private LocalDate expiryDateUsingFirstBillingDate(PayData payData, int addedMonths) {
+        LocalDate candidateExp = payData.getBillingDate().plusMonths(addedMonths); // 윤달인 경우, 28일이 더해짐.
+
+        final int dayOfFirstBilling = payData.getFirstBillingDate().getDayOfMonth();
+
+        if (isNotSameDayOfMonth(payData.getFirstBillingDate(), candidateExp)) {
+
+            final int dateLenOfCandiMon = lastDayOfMonth(candidateExp);
+
+            if (dateLenOfCandiMon < dayOfFirstBilling) {
+                return candidateExp.withDayOfMonth(dateLenOfCandiMon);
+            }
+            return candidateExp.withDayOfMonth(dayOfFirstBilling);
+        }
+        return candidateExp;
+    }
+
+    private boolean isNotSameDayOfMonth(LocalDate firstBillingDate, LocalDate candidateExp) {
+        return firstBillingDate.getDayOfMonth() != candidateExp.getDayOfMonth();
+    }
+
+    private int lastDayOfMonth(LocalDate date) {
+        return YearMonth.from(date).lengthOfMonth();
     }
 }
