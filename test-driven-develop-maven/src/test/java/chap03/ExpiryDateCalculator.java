@@ -4,8 +4,9 @@ import java.time.LocalDate;
 
 public class ExpiryDateCalculator {
     LocalDate calculateExpiryDate(PayData payData) {
+        int addedMonths = 1;
         if(payData.getFirstBillingDate() != null) {
-            LocalDate candidateExp = payData.getBillingDate().plusMonths(1); // 윤달인 경우, 28일이 더해짐.
+            LocalDate candidateExp = payData.getBillingDate().plusMonths(addedMonths); // 윤달인 경우, 28일이 더해짐.
             if (payData.getFirstBillingDate().getDayOfMonth() != candidateExp.getDayOfMonth()) {
                 return candidateExp.withDayOfMonth(payData.getFirstBillingDate().getDayOfMonth());
             }
